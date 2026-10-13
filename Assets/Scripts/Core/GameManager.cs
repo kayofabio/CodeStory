@@ -8,9 +8,12 @@ public class GameManager : MonoBehaviour
 
     private PythonRunner pythonRunner;
 
+    private PhaseEvaluator phaseEvaluator;
+
     private void Start()
     {
         pythonRunner = new PythonRunner();
+        phaseEvaluator = new PhaseEvaluator();
     }
 
     public async void ExecutarCodigo(string codigo)
@@ -55,15 +58,31 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        logController.MostrarMensagem(
-            string.IsNullOrEmpty(resultado.saida)
-                ? "> Código executado com sucesso, sem saída."
-                : "> Código executado com sucesso.\n> " + resultado.saida
-        );
 
-        if (!string.IsNullOrEmpty(resultado.saida))
+        if (string.IsNullOrEmpty(resultado.saida))
         {
-            sceneController.MostrarFala(resultado.saida);
+            logController.MostrarMensagem(
+                "> Código executado com sucesso, sem saída."
+            );
+
+            return;
         }
+
+        ResultadoFase avaliacao =
+            phaseEvaluator.AvaliarFase1(resultado.saida);
+
+        string mensagemLog =
+            "> Código executado com sucesso.\n> " + resultado.saida;
+
+        if (avaliacao.TemFinalAlternativo)
+        {
+            mensagemLog +=
+                "\n\n> " + avaliacao.TituloFinal +
+                "\n> " + avaliacao.MensagemFinal;
+        }
+
+        logController.MostrarMensagem(mensagemLog);
+        sceneController.MostrarFala(avaliacao.Fala);
+
     }
 }
