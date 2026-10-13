@@ -1,57 +1,44 @@
+
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private LogController logController;
     [SerializeField] private SceneController sceneController;
-    [SerializeField] private GameObject completionPanel;
 
-    private Interpreter interpreter;
-
-    private bool faseConcluida = false;
+    private PythonRunner pythonRunner;
 
     private void Start()
     {
-        interpreter = new Interpreter();
+        pythonRunner = new PythonRunner();
     }
 
-    public void ExecutarCodigo(string codigo)
+    public async void ExecutarCodigo(string codigo)
     {
-        string resultado = interpreter.Executar(codigo);
+        logController.MostrarMensagem(
+            "> Executando código Python..."
+        );
 
-        if (resultado != null)
+        var resultado = await pythonRunner.ExecutarAsync(codigo);
+
+        if (!string.IsNullOrEmpty(resultado.erro))
         {
             logController.MostrarMensagem(
-                "> Código executado com sucesso.\n" +
-                "> " + resultado
+                "> Erro na execução:\n" + resultado.erro
             );
 
-            sceneController.MostrarFala(resultado);
-
-            ConcluirFase();
+            return;
         }
-        else
+
+        logController.MostrarMensagem(
+            string.IsNullOrEmpty(resultado.saida)
+                ? "> Código executado com sucesso, sem saída."
+                : "> Código executado com sucesso.\n> " + resultado.saida
+        );
+
+        if (!string.IsNullOrEmpty(resultado.saida))
         {
-            logController.MostrarMensagem(
-                "> Erro: comando inválido."
-            );
+            sceneController.MostrarFala(resultado.saida);
         }
     }
-
-    private void ConcluirFase()
-{
-    if (faseConcluida)
-        return;
-
-    faseConcluida = true;
-
-    logController.MostrarMensagem(
-        "> Código executado com sucesso.\n" +
-        "> Fase concluída!"
-    );
-
-    completionPanel.SetActive(true);
-
-    Debug.Log("Fase concluída!");
-}
 }
