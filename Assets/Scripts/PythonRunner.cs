@@ -65,10 +65,15 @@ public class PythonRunner
 
             await Task.WhenAll(tarefaSaida, tarefaErro);
 
-            return (
-                tarefaSaida.Result.TrimEnd(),
-                tarefaErro.Result.TrimEnd()
-            );
+            string saida = tarefaSaida.Result.TrimEnd();
+            string erro = tarefaErro.Result.TrimEnd();
+
+            if (processo.ExitCode != 0)
+            {
+                return (saida, erro);
+            }
+
+            return (saida, "");
         }
         catch (Exception ex)
         {

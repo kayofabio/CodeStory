@@ -23,9 +23,34 @@ public class GameManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(resultado.erro))
         {
-            logController.MostrarMensagem(
-                "> Erro na execução:\n" + resultado.erro
-            );
+            string erro = resultado.erro;
+
+            if (erro.Contains("SyntaxError"))
+            {
+                logController.MostrarMensagem(
+                    "> Erro de sintaxe!\n" +
+                    "> Verifique parênteses, aspas e a escrita do código."
+                );
+            }
+            else if (erro.Contains("NameError"))
+            {
+                logController.MostrarMensagem(
+                    "> Nome não encontrado!\n" +
+                    "> Verifique se você criou a variável antes de usá-la."
+                );
+            }
+            else if (erro.Contains("ZeroDivisionError"))
+            {
+                logController.MostrarMensagem(
+                    "> Não é possível dividir um número por zero."
+                );
+            }
+            else
+            {
+                logController.MostrarMensagem(
+                    "> O Python encontrou um erro:\n" + erro
+                );
+            }
 
             return;
         }
