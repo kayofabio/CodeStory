@@ -2,41 +2,64 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class PythonRunner
 {
     private const int TempoLimiteMs = 10000;
+    private const string PrefixoResultado = "__UNITY_RESULT__";
 
-    public async Task<(string saida, string erro)> ExecutarAsync(string codigo)
+    public async Task<PythonExecutionResult> ExecutarAsync(string codigo)
     {
-        string caminhoScript = Path.Combine(
-            Application.temporaryCachePath,
+        string pastaTemp = Application.temporaryCachePath;
+
+        string caminhoCodigo = Path.Combine(
+            pastaTemp,
             "script_teste.py"
+        );
+
+        string caminhoWrapper = Path.Combine(
+            Application.streamingAssetsPath,
+            "python_wrapper.py"
         );
 
         try
         {
-            File.WriteAllText(caminhoScript, codigo);
+            File.WriteAllText(
+                caminhoCodigo,
+                codigo,
+                new UTF8Encoding(false)
+            );
 
+            if (!File.Exists(caminhoWrapper))
+            {
+                UnityEngine.Debug.LogError(
+                    "Python wrapper não encontrado. Caminho procurado: "
+                    + caminhoWrapper
+                );
 
+                return Erro(
+                    "Arquivo python_wrapper.py não encontrado. " +
+                    "Confira o caminho no Console do Unity."
+                );
+            }
 
             ProcessStartInfo info = new ProcessStartInfo
             {
                 FileName = "python",
-                Arguments = "\"" + caminhoScript + "\"",
+                Arguments = "\"" + caminhoWrapper + "\" \"" +
+                            caminhoCodigo + "\"",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                StandardOutputEncoding = System.Text.Encoding.UTF8,
-                StandardErrorEncoding = System.Text.Encoding.UTF8,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8,
                 CreateNoWindow = true
             };
 
             info.EnvironmentVariables["PYTHONIOENCODING"] = "utf-8";
-
-
 
             using Process processo = new Process();
             processo.StartInfo = info;
@@ -48,39 +71,76 @@ public class PythonRunner
             Task<string> tarefaErro =
                 processo.StandardError.ReadToEndAsync();
 
-            Task tarefaEspera = Task.Run(() => processo.WaitForExit());
+            Task tarefaEspera =
+                Task.Run(() => processo.WaitForExit());
 
-            Task resultado = await Task.WhenAny(
+            Task concluida = await Task.WhenAny(
                 tarefaEspera,
                 Task.Delay(TempoLimiteMs)
             );
 
-            if (resultado != tarefaEspera)
+            if (concluida != tarefaEspera)
             {
                 processo.Kill();
                 await tarefaEspera;
 
-                return ("", "Tempo limite de execução excedido.");
+                return Erro("Tempo limite de execução excedido.");
             }
 
             await Task.WhenAll(tarefaSaida, tarefaErro);
 
-            string saida = tarefaSaida.Result.TrimEnd();
-            string erro = tarefaErro.Result.TrimEnd();
+            string textoSaida = tarefaSaida.Result.TrimEnd();
+            string textoErro = tarefaErro.Result.TrimEnd();
 
             if (processo.ExitCode != 0)
             {
-                return (saida, erro);
+                return Erro(textoErro);
             }
 
-            return (saida, "");
+            int inicio = textoSaida.LastIndexOf(
+                PrefixoResultado,
+                StringComparison.Ordinal
+            );
+
+            if (inicio < 0)
+            {
+                return Erro(
+                    string.IsNullOrEmpty(textoErro)
+                        ? "O Python não retornou um resultado válido."
+                        : textoErro
+                );
+            }
+
+            string json = textoSaida.Substring(
+                inicio + PrefixoResultado.Length
+            ).Trim();
+
+            PythonExecutionResult resultado =
+                JsonUtility.FromJson<PythonExecutionResult>(json);
+
+            if (resultado == null)
+            {
+                return Erro("Não foi possível interpretar a resposta do Python.");
+            }
+
+            return resultado;
         }
         catch (Exception ex)
         {
-            return (
-                "",
+            return Erro(
                 "Não foi possível executar o Python: " + ex.Message
             );
         }
+    }
+
+    private PythonExecutionResult Erro(string mensagem)
+    {
+        return new PythonExecutionResult
+        {
+            saida = "",
+            erro = mensagem,
+            temQuantidade = false,
+            quantidade = 0
+        };
     }
 }
