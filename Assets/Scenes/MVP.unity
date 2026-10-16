@@ -1482,6 +1482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1612361840}
   - component: {fileID: 1612361839}
+  - component: {fileID: 1612361841}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1503,6 +1504,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   logController: {fileID: 646583097}
   sceneController: {fileID: 1483738596}
+  phaseManager: {fileID: 1612361841}
 --- !u!4 &1612361840
 Transform:
   m_ObjectHideFlags: 0
@@ -1518,6 +1520,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1612361841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612361838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f76ac3a3a8a9ae4b9169cb08e587404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhaseManager
+  faseAtual: 2
 --- !u!1 &1617535716
 GameObject:
   m_ObjectHideFlags: 0

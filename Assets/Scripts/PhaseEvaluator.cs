@@ -22,6 +22,44 @@ public class PhaseEvaluator
             null
         );
     }
+
+
+    public ResultadoFase AvaliarFase2(int quantidade)
+    {
+        if (quantidade < 0)
+        {
+            return new ResultadoFase(
+                "",
+                "Quantidade inválida",
+                "A quantidade de maçãs não pode ser negativa."
+            );
+        }
+
+        if (quantidade == 0)
+        {
+            return new ResultadoFase(
+                "Não estou com fome!",
+                "Maçãs para depois",
+                "Lia decide guardar as maçãs para outro momento."
+            );
+        }
+
+        if (quantidade <= 3)
+        {
+            return new ResultadoFase(
+                "Que lanche gostoso!",
+                "Um lanche na medida",
+                "Lia separou maçãs suficientes para um pequeno lanche."
+            );
+        }
+
+        return new ResultadoFase(
+            "São muitas maçãs!",
+            "Vamos guardar algumas",
+            "Rosa sugere guardar algumas maçãs para depois."
+        );
+    }
+
 }
 
 public class ResultadoFase

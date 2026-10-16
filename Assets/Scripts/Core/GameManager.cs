@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private LogController logController;
     [SerializeField] private SceneController sceneController;
-
+    [SerializeField] private PhaseManager phaseManager;
     private PythonRunner pythonRunner;
 
     private PhaseEvaluator phaseEvaluator;
@@ -68,8 +68,34 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        ResultadoFase avaliacao =
-            phaseEvaluator.AvaliarFase1(resultado.saida);
+
+        ResultadoFase avaliacao;
+
+        switch (phaseManager.FaseAtual)
+        {
+            case 1:
+                avaliacao = phaseEvaluator.AvaliarFase1(resultado.saida);
+                break;
+
+            case 2:
+                if (!resultado.temQuantidade)
+                {
+                    logController.MostrarMensagem(
+                        "> Você precisa criar a variável inteira quantidade."
+                    );
+                    return;
+                }
+
+                avaliacao = phaseEvaluator.AvaliarFase2(resultado.quantidade);
+                break;
+
+            default:
+                logController.MostrarMensagem(
+                    "> Esta fase ainda não está implementada."
+                );
+                return;
+        }
+
 
         string mensagemLog =
             "> Código executado com sucesso.\n> " + resultado.saida;
