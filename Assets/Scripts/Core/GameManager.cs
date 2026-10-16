@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LogController logController;
     [SerializeField] private SceneController sceneController;
     [SerializeField] private PhaseManager phaseManager;
+    [SerializeField] private EndingController endingController;
     private PythonRunner pythonRunner;
 
     private PhaseEvaluator phaseEvaluator;
@@ -102,9 +103,14 @@ public class GameManager : MonoBehaviour
 
         if (avaliacao.TemFinalAlternativo)
         {
-            mensagemLog +=
-                "\n\n> " + avaliacao.TituloFinal +
-                "\n> " + avaliacao.MensagemFinal;
+            endingController.MostrarFinal(
+                avaliacao.TituloFinal,
+                avaliacao.MensagemFinal
+            );
+        }
+        else
+        {
+            endingController.OcultarFinal();
         }
 
         logController.MostrarMensagem(mensagemLog);
