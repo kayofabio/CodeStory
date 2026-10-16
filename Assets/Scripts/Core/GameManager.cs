@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SceneController sceneController;
     [SerializeField] private PhaseManager phaseManager;
     [SerializeField] private EndingController endingController;
+    [SerializeField] private TMPro.TMP_Text objectiveText;
+    [SerializeField] private UnityEngine.UI.Button nextPhaseButton;
     private PythonRunner pythonRunner;
 
     private PhaseEvaluator phaseEvaluator;
@@ -15,6 +17,8 @@ public class GameManager : MonoBehaviour
     {
         pythonRunner = new PythonRunner();
         phaseEvaluator = new PhaseEvaluator();
+        nextPhaseButton.gameObject.SetActive(false);
+        nextPhaseButton.onClick.AddListener(AvancarParaProximaFase);
     }
 
     public async void ExecutarCodigo(string codigo)
@@ -69,6 +73,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (phaseManager.FaseAtual == 1)
+        {
+            nextPhaseButton.gameObject.SetActive(true);
+        }
+
 
         ResultadoFase avaliacao;
 
@@ -117,4 +126,32 @@ public class GameManager : MonoBehaviour
         sceneController.MostrarFala(avaliacao.Fala);
 
     }
+
+    private void AvancarParaProximaFase()
+    {
+        if (!phaseManager.AvancarFase())
+        {
+            logController.MostrarMensagem(
+                "> Você chegou à última fase disponível."
+            );
+
+            nextPhaseButton.gameObject.SetActive(false);
+            return;
+        }
+
+        endingController.OcultarFinal();
+        nextPhaseButton.gameObject.SetActive(false);
+
+        sceneController.MostrarFala("");
+
+        objectiveText.text =
+            "Fase 2 — Guardando números inteiros\n" +
+            "Ajude Lia a separar as maçãs. " +
+            "Crie a variável inteira quantidade e use print() para exibi-la.";
+
+        logController.MostrarMensagem(
+            "> Fase 2 iniciada. Prepare seu código Python!"
+        );
+    }
+
 }
