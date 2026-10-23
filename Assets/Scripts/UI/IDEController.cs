@@ -12,4 +12,12 @@ public class IDEController : MonoBehaviour
 
         gameManager.ExecutarCodigo(codigo);
     }
+
+    public void PreencherCodigo(string codigo)
+    {
+        codeInput.text = codigo;
+        codeInput.ActivateInputField();
+        codeInput.MoveTextEnd(false);
+    }
+
 }
