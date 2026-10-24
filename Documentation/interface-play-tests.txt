@@ -1,0 +1,1 @@
+PASS: starter without print; no bubble on empty output/errors; separate narration and baby speech; phase 2 bubble hidden; 30-line gutter; clear and phase hint; live Python UTF-8 output; execute lock/unlock; syntax feedback; next phase; integer evaluation; ending dismiss.

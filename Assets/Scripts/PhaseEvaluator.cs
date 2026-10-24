@@ -11,7 +11,7 @@ public class PhaseEvaluator
 
             return new ResultadoFase(
                 fala,
-                "Um pequeno tropeço",
+                "Um pequeno tropeco",
                 "Lia queria falar muita coisa, mas acabou se enrolando nas palavras."
             );
         }
@@ -30,17 +30,17 @@ public class PhaseEvaluator
         {
             return new ResultadoFase(
                 "",
-                "Quantidade inválida",
-                "A quantidade de maçãs não pode ser negativa."
+                "Quantidade invalida",
+                "A quantidade de macas nao pode ser negativa."
             );
         }
 
         if (quantidade == 0)
         {
             return new ResultadoFase(
-                "Não estou com fome!",
-                "Maçãs para depois",
-                "Lia decide guardar as maçãs para outro momento."
+                "Nao estou com fome!",
+                "Macas para depois",
+                "Lia decide guardar as macas para outro momento."
             );
         }
 
@@ -49,14 +49,14 @@ public class PhaseEvaluator
             return new ResultadoFase(
                 "Que lanche gostoso!",
                 "Um lanche na medida",
-                "Lia separou maçãs suficientes para um pequeno lanche."
+                "Lia separou macas suficientes para um pequeno lanche."
             );
         }
 
         return new ResultadoFase(
-            "São muitas maçãs!",
+            "Sao muitas macas!",
             "Vamos guardar algumas",
-            "Rosa sugere guardar algumas maçãs para depois."
+            "Rosa sugere guardar algumas macas para depois."
         );
     }
 

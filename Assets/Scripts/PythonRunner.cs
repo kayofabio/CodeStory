@@ -11,7 +11,7 @@ public class PythonRunner
     private const int TempoLimiteMs = 10000;
     private const string PrefixoResultado = "__UNITY_RESULT__";
 
-    public async Task<PythonExecutionResult> ExecutarAsync(string codigo)
+    public async Task<PythonExecutionResult> ExecutarAsync(string codigo, bool apenasPrint = false)
     {
         string pastaTemp = Application.temporaryCachePath;
 
@@ -50,7 +50,7 @@ public class PythonRunner
             {
                 FileName = "python",
                 Arguments = "\"" + caminhoWrapper + "\" \"" +
-                            caminhoCodigo + "\"",
+                            caminhoCodigo + "\"" + (apenasPrint ? " --apenas-print" : ""),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
